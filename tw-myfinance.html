@@ -128,23 +128,57 @@ Error message and password prompt
 
 <li>$:/isEncrypted</li>
 
+<li>$:/myfinance/macros</li>
+
+<li>$:/myfinance/macros/books</li>
+
+<li>$:/myfinance/macros/entry</li>
+
+<li>$:/myfinance/macros/history</li>
+
 <li>$:/plugins/ebalster/formula</li>
+
+<li>$:/plugins/inmysocks/GenTags</li>
 
 <li>$:/plugins/kixam/datepicker</li>
 
 <li>$:/plugins/kixam/moment</li>
 
+<li>$:/settings/AlternateTagFields/from</li>
+
+<li>$:/settings/AlternateTagFields/to</li>
+
+<li>$:/settings/AlternateTagFields/type</li>
+
 <li>$:/SiteSubtitle</li>
 
 <li>$:/SiteTitle</li>
+
+<li>$:/state/Excise/-1518758563/type</li>
+
+<li>$:/state/showeditpreview</li>
+
+<li>$:/state/sidebar</li>
+
+<li>$:/state/tab--1894100145</li>
 
 <li>$:/state/tab--1963855381</li>
 
 <li>$:/state/tab-1749438307</li>
 
+<li>$:/state/tab/sidebar--1835078512</li>
+
 <li>$:/StoryList</li>
 
+<li>$:/temp/advancedsearch</li>
+
 <li>$:/temp/info-plugin</li>
+
+<li>$:/temp/NewTagName/type</li>
+
+<li>$:/temp/search</li>
+
+<li>$:/temp/Settings/AlternateTagFields</li>
 
 <li>$:/theme</li>
 
@@ -153,6 +187,30 @@ Error message and password prompt
 <li>$:/themes/tiddlywiki/snowwhite</li>
 
 <li>$:/themes/tiddlywiki/vanilla</li>
+
+<li>$:/themes/tiddlywiki/vanilla/options/sidebarlayout</li>
+
+<li>accounts</li>
+
+<li>addBook</li>
+
+<li>addTransaction</li>
+
+<li>bank</li>
+
+<li>Books</li>
+
+<li>credits</li>
+
+<li>expenses</li>
+
+<li>History</li>
+
+<li>incomes</li>
+
+<li>misc</li>
+
+<li>Today</li>
 
 </ul>
 </p>
@@ -8434,10 +8492,76 @@ Error message and password prompt
 <div status="complete" title="$:/Import">
 <pre>The following tiddlers were imported:
 
-# [[$:/plugins/kixam/datepicker]]</pre>
+# [[$:/plugins/inmysocks/GenTags]]</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
+</div>
+<div created="20180403211018200" modified="20180403220959735" tags="$:/tags/Macro" title="$:/myfinance/macros">
+<pre>*[[$:/myfinance/macros/books]]
+*[[$:/myfinance/macros/entry]]
+*[[$:/myfinance/macros/history]]</pre>
+</div>
+<div created="20180403220750631" modified="20180403220850947" tags="$:/tags/Macro" title="$:/myfinance/macros/books">
+<pre>\define totalBookValue(book)
+&lt;$formula formula=&quot;sum([[$book$]listed[type]get[initialvalue]!prefix[Draft]]) - sum([tag[tx][$book$]listed[from]get[value]!prefix[Draft]]) + sum([tag[tx]!prefix[Draft][$book$]listed[to]get[value]!prefix[Draft]])&quot; precision=3 /&gt;
+\end
+
+\define bookEntries(book)
+
+&lt;$list filter=&quot;[[$book$]listed[type]!prefix[Draft]]&quot;&gt;
+
+* {{!!title}}, {{!!totalvalue}}
+
+&lt;/$list&gt;
+
+\end
+
+\define bookBody(book)
+
+! Total value
+
+&lt;&lt;totalBookValue $book$&gt;&gt;
+
+! $book$
+
+&lt;&lt;bookEntries $book$&gt;&gt;
+
+\end
+</pre>
+</div>
+<div created="20180403220824972" modified="20180403220902474" tags="$:/tags/Macro" title="$:/myfinance/macros/entry">
+<pre>\define totalEntryValue()
+
+&lt;$formula formula=&quot;sum([&lt;currentTiddler&gt;listed[to]get[value]!prefix[Draft]]) - sum([&lt;currentTiddler&gt;listed[from]get[value]!prefix[Draft]]) + sum([&lt;currentTiddler&gt;get[initialvalue]!prefix[Draft]])&quot; precision=3 /&gt;
+
+\end
+
+\define listEntryTX()
+
+&lt;$list filter=&quot;[tag[tx]sort[created]days[0]]&quot;&gt;
+
+* &lt;$link to={{!!title}}&gt;{{!!notes}} &lt;/$link&gt;{{!!value}} €, from &lt;$list filter=&quot;[all[current]tags:from[]!prefix[accounts]!prefix[expenses]!prefix[misc]!prefix[credits]!prefix[debts]!prefix[incomes]]&quot;/&gt; to &lt;$list filter=&quot;[all[current]tags:to[]!prefix[accounts]!prefix[expenses]!prefix[misc]!prefix[credits]!prefix[debts]!prefix[incomes]]&quot;/&gt;,  &lt;$view field=&quot;created&quot; format=&quot;date&quot; template=&quot;DD MMM YYYY&quot;/&gt; &lt;$button class=&quot;tc-btn-invisible tc-tiddlylink&quot;&gt;&lt;$action-setfield $tiddler=&quot;$:/temp/editTX&quot; newtitle={{!!title}}/&gt;&lt;$action-navigate $to=&quot;EditTX&quot;/&gt; [edit] &lt;/$button&gt;
+
+&lt;/$list&gt;
+\end</pre>
+</div>
+<div created="20180403220921353" modified="20180403220935493" tags="$:/tags/Macro" title="$:/myfinance/macros/history">
+<pre>\define history(n)
+
+! balance
+
+&lt;$formula formula=&quot;sum([tag[tx]days[$n$]![expenses]listed[to]get[value]!prefix[Draft]])-sum([tag[tx]days[$n$][expenses]listed[to]get[value]!prefix[Draft]])&quot;/&gt;
+
+! transactions
+
+&lt;$list filter=&quot;[tag[tx]sort[created]days[$n$]!prefix[Draft]]&quot;&gt;
+
+* &lt;$link to={{!!title}}&gt;{{!!notes}} &lt;/$link&gt;{{!!value}} €, from &lt;$list filter=&quot;[all[current]tags:from[]!prefix[account]]&quot;/&gt; to &lt;$list filter=&quot;[all[current]tags:to[]!prefix[account]!prefix[expenses]!prefix[incomes]!prefix[debt]!prefix[credit]]&quot;/&gt;,  &lt;$view field=&quot;created&quot; format=&quot;date&quot; template=&quot;DD MMM YYYY&quot;/&gt; &lt;$button class=&quot;tc-btn-invisible tc-tiddlylink&quot;&gt;&lt;$action-setfield $tiddler=&quot;$:/temp/editTX&quot; newtitle={{!!title}}/&gt;&lt;$action-navigate $to=&quot;EditTX&quot;/&gt; edit &lt;/$button&gt;
+
+&lt;/$list&gt;
+
+\end</pre>
 </div>
 <div bag="default" created="20171209233132315" description="Spreadsheet-like formulas in TiddlyWiki." list="readme settings license" modified="20180212025120982" name="TiddlyFormula" plugin-type="plugin" revision="0" tags="" title="$:/plugins/ebalster/formula" type="application/json" version="0.2.3">
 <pre>{
@@ -8762,6 +8886,51 @@ Error message and password prompt
     }
 }</pre>
 </div>
+<div author="inmysocks" core-version="&gt;=5.1.0" dependents="" description="A plugin to let any field be used like the tags field" plugin-type="plugin" source="" title="$:/plugins/inmysocks/GenTags" type="application/json" version="0.0.1">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;$:/plugins/inmysocks/GenericTagFields/settings/AlternateTagFields&quot;: {
+            &quot;alternate_tag_fields&quot;: &quot;demo uses points joe&quot;,
+            &quot;caption&quot;: &quot;Alternate Tag Fields&quot;,
+            &quot;tags&quot;: &quot;$:/tags/ControlPanel&quot;,
+            &quot;title&quot;: &quot;$:/plugins/inmysocks/GenericTagFields/settings/AlternateTagFields&quot;,
+            &quot;text&quot;: &quot;!!Use New Field:\n\n&lt;table&gt;\n    &lt;tr&gt;\n        &lt;th&gt;\n            Field Label\n        &lt;/th&gt;\n        &lt;th&gt;\n            Field Name\n        &lt;/th&gt;\n        &lt;th&gt;\n            Pill Color\n        &lt;/th&gt;\n        &lt;th&gt;\n            Wikify Tags\n        &lt;/th&gt;\n        &lt;th&gt;\n            Hide in edit mode\n        &lt;/th&gt;\n        &lt;th&gt;\n            Hide in view mode\n        &lt;/th&gt;\n    &lt;/tr&gt;\n    &lt;tr&gt;\n        &lt;td&gt;\n            &lt;$edit-text\n                tiddler='$:/temp/Settings/AlternateTagFields'\n                field='label'\n                class='tc-edit-texteditor'\n            /&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$edit-text\n                tiddler='$:/temp/Settings/AlternateTagFields'\n                field='fieldname'\n                class='tc-edit-texteditor'\n            /&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$edit-text\n                tiddler='$:/temp/Settings/AlternateTagFields'\n                field=color\n            /&gt;\n            &lt;$button&gt;reset\n                &lt;$action-setfield\n                    $tiddler='$:/temp/Settings/AlternateTagFields'\n                    $field=color\n                    $value=''\n                /&gt;\n            &lt;/$button&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$checkbox\n                tiddler='$:/temp/Settings/AlternateTagFields'\n                field=wikify\n                checked=True\n                unchecked=False\n            &gt;\n            &lt;/$checkbox&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$checkbox\n                tiddler='$:/temp/Settings/AlternateTagFields'\n                field=hide_in_edit_mode\n                checked=true\n                unchecked=false\n            &gt;\n            &lt;/$checkbox&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$checkbox\n                tiddler='$:/temp/Settings/AlternateTagFields'\n                field=hide_in_view_mode\n                checked=true\n                unchecked=false\n            &gt;\n            &lt;/$checkbox&gt;\n        &lt;/td&gt;\n    &lt;/tr&gt;\n&lt;/table&gt;\n\n&lt;$list\n    filter='[[$:/temp/Settings/AlternateTagFields]has[fieldname]get[fieldname]limit[1]] -title -text\ntags -created -modified -tags'\n    emptyMessage=\&quot;Enter a field name. Valid field names contain only letters, numbers, `.`, `-`, and `-`. Additionally you may not use the names `title`, `text`, `tags`, `created` or `modified`.\&quot;\n&gt;\n    &lt;$set\n        name=SettingsTiddlerName\n        filter='[{$:/temp/Settings/AlternateTagFields!!fieldname}addprefix[$:/settings/AlternateTagFields/]]'\n    &gt;\n        &lt;$button&gt;Add Field\n            &lt;$action-setfield\n                $tiddler=&lt;&lt;SettingsTiddlerName&gt;&gt;\n                fieldname={{$:/temp/Settings/AlternateTagFields!!fieldname}}\n                label={{$:/temp/Settings/AlternateTagFields!!label}}\n                hide_in_view_mode={{$:/temp/Settings/AlternateTagFields!!hide_in_view_mode}}\n                hide_in_edit_mode={{$:/temp/Settings/AlternateTagFields!!hide_in_edit_mode}}\n                wikify={{$:/temp/Settings/AlternateTagFields!!wikify}}\n            /&gt;\n            &lt;$action-setfield\n                $tiddler='$:/temp/Settings/AlternateTagFields'\n                fieldname=''\n                label=''\n                hide_in_view_mode=''\n                hide_in_edit_mode=''\n                wikify=''\n            /&gt;\n        &lt;/$button&gt;\n    &lt;/$set&gt;\n&lt;/$list&gt;\n\n!!Additional fields currently in use:\n\n&lt;table&gt;\n    &lt;tr&gt;\n        &lt;th&gt;\n            Field Label\n        &lt;/th&gt;\n        &lt;th&gt;\n            Field Name\n        &lt;/th&gt;\n        &lt;th&gt;\n            Pill Color\n        &lt;/th&gt;\n        &lt;th&gt;\n            Wikify Tags\n        &lt;/th&gt;\n        &lt;th&gt;\n            Hide in edit mode\n        &lt;/th&gt;\n        &lt;th&gt;\n            Hide in view mode\n        &lt;/th&gt;\n        &lt;th&gt;\n            Remove Field\n        &lt;/th&gt;\n    &lt;/tr&gt;\n\n&lt;$list\n    filter='[prefix[$:/settings/AlternateTagFields/]]'\n&gt;\n    &lt;tr&gt;\n        &lt;td&gt;\n            &lt;$edit-text\n                field=label\n                class='tc-edit-texteditor'\n            /&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$edit-text\n                field=fieldname\n                class='tc-edit-texteditor'\n            /&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$edit-text\n                field=color\n            /&gt;\n            &lt;$button&gt;reset\n                &lt;$action-setfield\n                    $field=color\n                    $value=''\n                /&gt;\n            &lt;/$button&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$checkbox\n                field=wikify\n                checked=True\n                unchecked=False\n            &gt;\n            &lt;/$checkbox&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$checkbox\n                field=hide_in_edit_mode\n                checked=true\n                unchecked=false\n            &gt;\n            &lt;/$checkbox&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$checkbox\n                field=hide_in_view_mode\n                checked=true\n                unchecked=false\n            &gt;\n            &lt;/$checkbox&gt;\n        &lt;/td&gt;\n        &lt;td&gt;\n            &lt;$button class='tc-btn-invisible'&gt;{{$:/core/images/delete-button}}\n                &lt;$action-deletetiddler\n                    $tiddler=&lt;&lt;currentTiddler&gt;&gt;\n                /&gt;\n            &lt;/$button&gt;\n        &lt;/td&gt;\n    &lt;/tr&gt;\n&lt;/$list&gt;\n\n&lt;/table&gt;\n&quot;
+        },
+        &quot;$:/plugins/inmysocks/GenericTagFields/LikeTagPills&quot;: {
+            &quot;tags&quot;: &quot;Templates&quot;,
+            &quot;title&quot;: &quot;$:/plugins/inmysocks/GenericTagFields/LikeTagPills&quot;,
+            &quot;text&quot;: &quot;\\define tag-styles()\nbackground-color:$(backgroundColor)$;\nfill:$(foregroundColor)$;\ncolor:$(foregroundColor)$;\n\\end\n\n\\define tag-body-inner(colour,fallbackTarget,colourA,colourB)\n&lt;$set\n    name=\&quot;foregroundColor\&quot;\n    value=&lt;&lt;contrastcolour\n        target:\&quot;\&quot;\&quot;$colour$\&quot;\&quot;\&quot;\n        fallbackTarget:\&quot;\&quot;\&quot;$fallbackTarget$\&quot;\&quot;\&quot;\n        colourA:\&quot;\&quot;\&quot;$colourA$\&quot;\&quot;\&quot;\n        colourB:\&quot;\&quot;\&quot;$colourB$\&quot;\&quot;\&quot;&gt;&gt;\n&gt;\n    &lt;$set\n        name=\&quot;backgroundColor\&quot;\n        value=\&quot;\&quot;\&quot;$colour$\&quot;\&quot;\&quot;\n    &gt;\n        &lt;$button\n            popup=&lt;&lt;qualify \&quot;$:/state/popup/tag\&quot;&gt;&gt;\n            class=\&quot;tc-btn-invisible tc-tag-label\&quot;\n            style=&lt;&lt;tag-styles&gt;&gt;\n        &gt;\n            &lt;$transclude\n                tiddler={{!!icon}}\n            /&gt;\n            &lt;$list\n                filter='[&lt;WikifyTags&gt;prefix[True]]'\n                variable=dummy\n                emptyMessage=\&quot;\&quot;\&quot;&lt;$view field=\&quot;title\&quot; format=\&quot;text\&quot;/&gt;\&quot;\&quot;\&quot;\n            &gt;\n                {{!!title}}\n            &lt;/$list&gt;\n        &lt;/$button&gt;\n        &lt;$reveal\n            state=&lt;&lt;qualify \&quot;$:/state/popup/tag\&quot;&gt;&gt;\n            type=\&quot;popup\&quot;\n            position=\&quot;below\&quot;\n            animate=\&quot;yes\&quot;\n        &gt;\n            &lt;div\n                class=\&quot;tc-drop-down\&quot;\n            &gt;\n                &lt;$list\n                    filter='[&lt;WikifyTags&gt;prefix[True]]'\n                    variable=dummy\n                    emptyMessage=\&quot;\&quot;\&quot;&lt;$transclude tiddler=\&quot;$:/core/ui/ListItemTemplate\&quot;/&gt;\&quot;\&quot;\&quot;\n                &gt;\n                    {{!!title}}\n                &lt;/$list&gt;\n                &lt;hr&gt;\n                &lt;$list\n                    filter=\&quot;[all[current]listed&lt;TheField&gt;]\&quot;\n                    template=\&quot;$:/core/ui/ListItemTemplate\&quot;\n                /&gt;\n            &lt;/div&gt;\n        &lt;/$reveal&gt;\n    &lt;/$set&gt;\n&lt;/$set&gt;\n\\end\n\n\\define tag-body(colour,palette)\n&lt;span class=\&quot;tc-tag-list-item\&quot;&gt;\n    &lt;$set\n        name=TagBackground\n        filter='[[$:/settings/AlternateTagFields/$(TheField)$]get[color]]'\n        emptyValue={{$palette$##tag-background}}\n    &gt;\n        &lt;$set\n            name=Color\n            filter='[is[current]get[color]]'\n            emptyValue=&lt;&lt;TagBackground&gt;&gt;\n        &gt;\n            &lt;$macrocall\n                $name=\&quot;tag-body-inner\&quot;\n                colour=&lt;&lt;Color&gt;&gt;\n                fallbackTarget=&lt;&lt;TagBackground&gt;&gt;\n                colourA={{$palette$##foreground}}\n                colourB={{$palette$##background}}\n            /&gt;\n        &lt;/$set&gt;\n    &lt;/$set&gt;\n&lt;/span&gt;\n\\end\n\n&lt;$macrocall\n    $name=\&quot;tag-body\&quot;\n    colour={{!!color}}\n    palette={{$:/palette}}\n/&gt;\n&quot;
+        },
+        &quot;$:/plugins/inmysocks/GenericTagFields/ListLikeTagsMacro&quot;: {
+            &quot;tags&quot;: &quot;$:/tags/Macro&quot;,
+            &quot;title&quot;: &quot;$:/plugins/inmysocks/GenericTagFields/ListLikeTagsMacro&quot;,
+            &quot;text&quot;: &quot;\\define lingo-base() $:/language/EditTemplate/\n\\define tag-styles()\nbackground-color:$(backgroundColor)$;\n\\end\n\\define TagLikeList(fieldName label showEmpty:\&quot;\&quot; wikify:\&quot;False\&quot;)\n&lt;div&gt;\n    &lt;$set\n        name=WikifyTags\n        value=\&quot;\&quot;\&quot;$wikify$\&quot;\&quot;\&quot;\n    &gt;\n        &lt;$list\n            filter='[list[!!$fieldName$]] [[$showEmpty$]prefix[True]] +[limit[1]]'\n        &gt;\n            $label$:\n        &lt;/$list&gt;\n        &lt;$set\n            name=TheField\n            value='$fieldName$'\n        &gt;\n            &lt;$list\n                filter='[list[!!$fieldName$]]'\n            &gt;\n                {{||$:/plugins/inmysocks/GenericTagFields/LikeTagPills}}\n            &lt;/$list&gt;\n        &lt;/$set&gt;\n    &lt;/$set&gt;\n&lt;/div&gt;\n\\end\n\n\\define EditTagLikeList(fieldName label wikify:\&quot;False\&quot;)\n&lt;div\n    class=\&quot;tc-edit-tags\&quot;\n&gt;\n    &lt;$set\n        name=ContainingTiddler\n        value={{!!title}}\n    &gt;\n        &lt;$set\n            name=WikifyTags\n            value=\&quot;\&quot;\&quot;$wikify$\&quot;\&quot;\&quot;\n        &gt;\n            $label$:\n            &lt;$set\n                name=TempTiddlerName\n                filter=\&quot;[[$fieldName$]addprefix[$:/temp/NewTagName/]]\&quot;\n            &gt;\n                &lt;$set\n                    name=TempPopupState\n                    filter=\&quot;[[$fieldName$]addprefix[$:/state/popup/tags-auto-complete/]]\&quot;\n                &gt;\n                    &lt;$set\n                        name=DefaultBackgroundColor\n                        filter=\&quot;[&lt;SettingsTiddler&gt;get[color]]\&quot;\n                    &gt;\n                        &lt;$list\n                            filter=\&quot;[list[!!$fieldName$]sort[title]]\&quot;\n                            storyview=\&quot;pop\&quot;\n                            variable=CurrentItem\n                        &gt;\n                            &lt;$set\n                                name=\&quot;backgroundColor\&quot;\n                                filter=\&quot;[&lt;CurrentItem&gt;get[color]]\&quot;\n                                emptyValue=&lt;&lt;DefaultBackgroundColor&gt;&gt;\n                            &gt;\n                                &lt;span\n                                    style=&lt;&lt;tag-styles&gt;&gt;\n                                    class=\&quot;tc-tag-label\&quot;\n                                &gt;\n                                    &lt;$list\n                                        filter=\&quot;\&quot;\&quot;[&lt;WikifyTags&gt;prefix[True]]\&quot;\&quot;\&quot;\n                                        emptyMessage=\&quot;\&quot;\&quot;&lt;$text text=&lt;&lt;CurrentItem&gt;&gt;/&gt;\&quot;\&quot;\&quot;\n                                    &gt;\n                                        &lt;&lt;CurrentItem&gt;&gt;\n                                    &lt;/$list&gt;\n                                    &lt;$button\n                                        class=\&quot;tc-btn-invisible tc-remove-tag-button\&quot;\n                                    &gt;\n                                        &amp;times;\n                                        &lt;$action-listops\n                                            $tiddler=&lt;&lt;currentTiddler&gt;&gt;\n                                            $field=\&quot;\&quot;\&quot;$fieldName$\&quot;\&quot;\&quot;\n                                            $subfilter='-[&lt;CurrentItem&gt;]'\n                                        /&gt;\n                                    &lt;/$button&gt;\n                                &lt;/span&gt;\n                            &lt;/$set&gt;\n                        &lt;/$list&gt;\n\n                        &lt;div class=\&quot;tc-edit-add-tag\&quot;&gt;\n                            &lt;span class=\&quot;tc-add-tag-name\&quot;&gt;\n                                &lt;$edit-text\n                                    tiddler=&lt;&lt;TempTiddlerName&gt;&gt;\n                                    tag=\&quot;input\&quot;\n                                    default=\&quot;\&quot;\n                                    placeholder={{$:/language/EditTemplate/Tags/Add/Placeholder}}\n                                    focusPopup=&lt;&lt;TempPopupState&gt;&gt;\n                                    class=\&quot;tc-edit-texteditor tc-popup-handle\&quot;\n                                /&gt;\n                            &lt;/span&gt;\n                            &lt;$button\n                                popup=&lt;&lt;TempPopupState&gt;&gt;\n                                class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot;\n                                tooltip={{$:/language/EditTemplate/Tags/Dropdown/Hint}}\n                                aria-label={{$:/language/EditTemplate/Tags/Dropdown/Caption}}\n                            &gt;\n                                {{$:/core/images/down-arrow}}\n                            &lt;/$button&gt;\n                            &lt;span\n                                class=\&quot;tc-add-tag-button\&quot;\n                            &gt;\n                                &lt;$set\n                                    name=NewValue\n                                    filter='[&lt;TempTiddlerName&gt;get[text]]'\n                                &gt;\n                                    &lt;$button\n                                        set=&lt;&lt;TempTiddlerName&gt;&gt;\n                                        setTo=\&quot;\&quot;\n                                        class=\&quot;\&quot;\n                                    &gt;\n                                        &lt;$action-listops\n                                            $field=\&quot;\&quot;\&quot;$fieldName$\&quot;\&quot;\&quot;\n                                            $subfilter=&lt;&lt;NewValue&gt;&gt;\n                                        /&gt;\n                                        &lt;&lt;lingo Tags/Add/Button&gt;&gt;\n                                    &lt;/$button&gt;\n                                &lt;/$set&gt;\n                            &lt;/span&gt;\n                        &lt;/div&gt;\n                        &lt;div\n                            class=\&quot;tc-block-dropdown-wrapper\&quot;\n                        &gt;\n                            &lt;$reveal\n                                state=&lt;&lt;TempPopupState&gt;&gt;\n                                type=\&quot;nomatch\&quot;\n                                text=\&quot;\&quot;\n                                default=\&quot;\&quot;\n                            &gt;\n                                &lt;div\n                                    class=\&quot;tc-block-dropdown\&quot;\n                                &gt;\n                                    &lt;$list\n                                        filter=\&quot;\&quot;\&quot;[tags:$fieldName$[]]\&quot;\&quot;\&quot;\n                                    &gt;\n                                        &lt;$button\n                                            set=&lt;&lt;TempTiddlerName&gt;&gt;\n                                            setTo=\&quot;\&quot;\n                                            class=\&quot;tc-btn-invisible\&quot;\n                                        &gt;\n                                            {{||$:/core/ui/Components/tag-link}}\n                                            &lt;$action-listops\n                                                $tiddler=&lt;&lt;ContainingTiddler&gt;&gt;\n                                                $field=\&quot;\&quot;\&quot;$fieldName$\&quot;\&quot;\&quot;\n                                                $subfilter='[&lt;currentTiddler&gt;]'\n                                            /&gt;\n                                        &lt;/$button&gt;\n                                        &lt;br&gt;\n                                    &lt;/$list&gt;\n                                &lt;/div&gt;\n                            &lt;/$reveal&gt;\n                        &lt;/div&gt;\n                    &lt;/$set&gt;\n                &lt;/$set&gt;\n            &lt;/$set&gt;\n        &lt;/$set&gt;\n    &lt;/$set&gt;\n&lt;/div&gt;\n\\end\n\n!!~TagLikeList macro\n\nThis shows a field like the tags field is displayed in tiddler view mode.\n\nUsage: `&lt;&lt;TagLikeList fieldName label showEmpty wikify&gt;&gt;`\n\n|!Input |!Description |\n|fieldName |The name of the field to display as a tag field |\n|label |The label you wish to use with the displayed list. This label is wikified. |\n|showEmpty |If this is set to `True` than the label is shown even if the field is empty, otherwise the label is only displayed when the field isn't empty. Defaults to false. |\n|wikify |If this is set to `True` than the tags themselves are wikified. This defaults to `False`. |\n\nThis Macro is used by `&lt;&lt;TagLikeList fieldName label&gt;&gt;` where `fieldName` is the name that contains what you want to list and `label` is the label you want to give it.\n\nExample `&lt;&lt;TagLikeList tags Tags&gt;&gt;`\n\n&lt;&lt;TagLikeList tags Tags&gt;&gt;\n\n!!~EditTagLikeList macro\n\nThis is the editable version of the ~TagLikeList macro that shows the field contents like the tags field is shown in edit mode of a tiddler so you can add or remove items from the field.\n\nUsage: `&lt;&lt;EditTagLikeList fieldName label wikify&gt;&gt;`\n\n|!Input |!Description |\n|fieldName |The name of the field to display as a tag field |\n|label |The label you wish to use with the displayed list. This label is wikified. |\n|showEmpty |If this is set to `True` than the label is shown even if the field is empty, otherwise the label is only displayed when the field isn't empty. Defaults to false. |\n|wikify |If this is set to `True` than the tags themselves are wikified. This defaults to `False`. |\n\nThis macro is ued by `&lt;&lt;EditTagLikeList fieldName label&gt;&gt;` where `fieldName`is the name of the field used.\n\nExample `&lt;&lt;EditTagLikeList tags Tags&gt;&gt;`:\n\n&lt;&lt;EditTagLikeList tags Tags&gt;&gt;\n&quot;
+        },
+        &quot;$:/plugins/inmysocks/GenericTagFields/template/EditTemplate/OtherTagFieldsEditTemplate&quot;: {
+            &quot;list-after&quot;: &quot;$:/core/ui/EditTemplate/tags&quot;,
+            &quot;tags&quot;: &quot;$:/tags/EditTemplate&quot;,
+            &quot;title&quot;: &quot;$:/plugins/inmysocks/GenericTagFields/template/EditTemplate/OtherTagFieldsEditTemplate&quot;,
+            &quot;text&quot;: &quot;&lt;$list\n    filter='[prefix[$:/settings/AlternateTagFields/]!hide_in_edit_mode[true]]'\n    variable=SettingsTiddler\n&gt;\n    &lt;$set\n        name=FieldName\n        filter='[&lt;SettingsTiddler&gt;get[fieldname]]'\n    &gt;\n        &lt;$set\n            name=Wikify\n            filter='[&lt;SettingsTiddler&gt;get[wikify]]'\n        &gt;\n            &lt;$set\n                name=Label\n                filter='[&lt;SettingsTiddler&gt;get[label]]'\n            &gt;\n                &lt;$macrocall\n                    $name=EditTagLikeList\n                    fieldName=&lt;&lt;FieldName&gt;&gt;\n                    label=&lt;&lt;Label&gt;&gt;\n                    wikify=&lt;&lt;Wikify&gt;&gt;\n                /&gt;\n            &lt;/$set&gt;\n        &lt;/$set&gt;\n    &lt;/$set&gt;\n&lt;/$list&gt;\n&quot;
+        },
+        &quot;$:/plugins/inmysocks/GenericTagFields/template/ViewTemplate/OtherTagFieldsViewTemplate&quot;: {
+            &quot;list-after&quot;: &quot;$:/core/ui/ViewTemplate/tags&quot;,
+            &quot;tags&quot;: &quot;$:/tags/ViewTemplate&quot;,
+            &quot;title&quot;: &quot;$:/plugins/inmysocks/GenericTagFields/template/ViewTemplate/OtherTagFieldsViewTemplate&quot;,
+            &quot;text&quot;: &quot;&lt;$list\n    filter='[prefix[$:/settings/AlternateTagFields/]!hide_in_view_mode[true]]'\n    variable=FieldInfo\n&gt;\n    &lt;$set\n        name=WikifyTags\n        filter='[&lt;FieldInfo&gt;get[wikify]]'\n    &gt;\n        &lt;$set\n            name=FieldName\n            filter='[&lt;FieldInfo&gt;get[fieldname]]'\n        &gt;\n            &lt;$set\n                name=FieldLabel\n                filter='[&lt;FieldInfo&gt;get[label]]'\n            &gt;\n                &lt;$macrocall\n                    $name=TagLikeList\n                    fieldName=&lt;&lt;FieldName&gt;&gt;\n                    label=&lt;&lt;FieldLabel&gt;&gt;\n                    showEmpty=False\n                    wikify=&lt;&lt;WikifyTags&gt;&gt;\n                /&gt;\n            &lt;/$set&gt;\n        &lt;/$set&gt;\n    &lt;/$set&gt;\n&lt;/$list&gt;\n&quot;
+        },
+        &quot;$:/plugins/inmysocks/GenericTagFields/ReadMe&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/inmysocks/GenericTagFields/ReadMe&quot;,
+            &quot;text&quot;: &quot;This plugin lets you use multiple fields the same way you use the tags field. These fields are independent, so if you have `foo` in the normal tags field in one tiddler and `foo` in another field in another tiddler, the filter `[tags[foo]]` will only return the tiddler with `foo` in the tags field.\n\n!!Basic Usage\n\nThere is a settings tab in the $:/ControlPanel where you can set which fields are treated like tags for all tiddlers.\n\nTo add a new tag field go to the tab in the $:/ControlPanel and enter a new field name and label and set the other options. The field name must follow the normal field name rules (only numbers, lower case letters . - and _ allowed. No spaces.) The label can be any string you wish. The pill color is the default pill color for tags in that field. By default all the fields will use the same yellow as the default tag color (this is changed by changing the palette), but if you want all tags in your tag-like field to be a different color you can set that color when you define the field. If you want the tag pills to use the default tag color click on reset to clear the field. Note that there is a bug where the color selector will show black if the field is empty.\nThe `Wikify Tags` option is new. If you select that than you can put something like `{{$:/core/images/save-button}}` as a tag and it will display as {{$:/core/images/save-button}}. The options `Hide in Edit Mode` and `Hide in View Mode` hide the tag list in view mode and the interface for adding/removing tags in edit mode for that field. These are useful if you want to use the macros described below to create your own interface or display.\n\nOnce you have configured the settings click on the add field button to add the field to the list of tag fields. Note that this doesn't create any fields. It creates a tiddler with the configuration for the field, but it doesn't modify any other tiddlers. When the configuration tiddler exists for a field than the tags interface can be seen in view and edit mode (unless it is hidden).\n\nOnce you have some tag fields listed there will be a table listing the fields and letting you change the options for each field. The options are the same as when adding a field but there will also be a `Remove Field` option. Clicking on this will remove the settings tiddler and the field will no longer be used like a tags field. Note that this doesn't affect any tiddlers other than the settings tiddler, so if you have added tags in the field `demo` and then use this interface and click `Remove Field` the 'demo' fields in all of your tiddlers are unaffected, it is only the interface that changes.\n\nAfter adding a tag field, if you edit a tiddler you should see the interface for editing tags in that field under the interface for editing the normal tags field. Adding and removing tags works the same way in all fields.\n\n!!Filter Operators\n\nTags have three filter operators associated with them, `tags`, `tagging` and `tag`. This section explains how to use them (or alternatives) with this plugin.\n\n`tags` - This plugin extends the tags filter operator so you can now specify which field to look in. Normally `&lt;$list filter='[tags[]]'/&gt;` will give you a list of all tags in the tags field of all tiddlers. If you use `&lt;$list filter='[tags:demo[]]'/&gt;` it will give you all tags in the demo field of all tiddlers. Otherwise the behaviour is identical.\n\n`tagging` - This operator returns a list of tiddlers that have the input tag (or tags) in their `tags` field. You can get this same behaviour for the alternate tag fields you make with this plugin by using a filter like `&lt;$list filter='[[TagName]listed[new_tag_field]]'/&gt;`, which will list all the tiddlers that have the tag `TagName` in the field `new_tag_field`.\n\n`tag` - ''There isn't an exact equavilent for this operator yet! But you can use the alternative for tagging is almost every situation.'' This operator returns a list of tiddlers that have the input tag in their `tags` field. It is almost identical to tagging with two important distinctions:\n\n*`tag` can only use a singe tag\n*you can negate this operator but not tagging\n\n!!More Advanced Usage\n\nIf you wish you can use the macros in [[$:/plugins/inmysocks/GenericTagFields/ListLikeTagsMacro]] to add a list of tags anywhere you wish without affecting all tiddlers. See the macro tiddler for more information.\n\n!!Feature List\n\n*Use any field like the tags field (with some differences noted below)\n*Set a field to be used like a tag field globally\n*Add and remove items from a field used like a tag field in the same way you add or remove tags from the tags field\n*Show/hide a globally used tag-like field in view mode (it is displayed the same way as tags are, complete with the tag pills and the drop-down list)\n*Show/hide the tag interface for each field used as a global tag-like field\n*Use the macro [[TagLikeList|$:/plugins/inmysocks/GenericTagFields/ListLikeTagsMacro]] to show a list field like it were tags in any tiddler\n*Use the macro [[EditTagLikeList|$:/plugins/inmysocks/GenericTagFields/ListLikeTagsMacro]] to show the add/remove tags interface for any field in any tiddler\n*Set the background color for tags in each field\n*Set the background color for individual tags (unfortunately the same color is used regardless of the field it is in for individual tags. So if you set the color for the tag `foo` to green, and then put `foo` in another tag-like field it will be green there also. I am looking into it.)\n*Field labels can be text, icons or images. (The name and the label aren't the same thing. The name is something like `demo` the label is what is displayed next to the list of things in the field in view and edit mode.\n*Tags can also be text, icons or images. Go to the settings tab in the $:/ControlPanel and under the configuration for the field there is a checkbox `Wikify Tags`. If you check this box than whatever you put in for the tag will be wikified before it is displayed. So you can use just icons for a tag if you wish.\n*The tags[] filter operator can now take a suffix, so [tags:demo[]] will list the demo field as though it were a tags field.\n\n!!Bugs and Road Map\n\n*FIND A BETTER NAME! Generic Tags (GenTags?) Tags-in-limbo (tails?)Tags In Other Fields Without A Good Name (TIOFWAGN?) Fields Have Tags And Great Names (FHTAGN?) Could Tags Have Ulterior Labels Hidden from Us (CTHULHU?) semantic tags or s-tags?\n*The drop down selectior in edit mode doesn't have the correct colors for the other fields\n*Find a way to let the custom tag colors be per field, so you can have `foo` in separate custom colors in `tags` and `demo`. Or just a custom color in `tags` and the default color for `demo`.\n*Add an option to toggle the visiblity of the label without affecting anything else\n*Add an option to have some alternative to the tag pills for display.\n*I may add an optional description for the fields. This description would appear when you click or hover over the label next to the list of things in the field.\n*For fields used as global alternative tag fields add an option to hide the field in edit mode so you only see the tag interface for it. (Requires some changes to the core)\n*I need to add better handling for when a normal tags field exists so they are all consistent (Requires some changes to the core)\n*Figure out if we should update any other filter operators (tagging, tag, others?) so that they work with the new fields as expected. (Requires some changes to the core)\n&quot;
+        },
+        &quot;$:/core/modules/filters/tags.js&quot;: {
+            &quot;module-type&quot;: &quot;filteroperator&quot;,
+            &quot;title&quot;: &quot;$:/core/modules/filters/tags.js&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/core/modules/filters/tags.js\ntype: application/javascript\nmodule-type: filteroperator\n\nFilter operator returning all the tags of the selected tiddlers\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\n/*\nExport our filter function\n*/\nexports.tags = function(source,operator,options) {\n\tvar tags = {};\n\tvar otherArray = {};\n\tvar field = (operator.suffix) ? operator.suffix:'tags';\n\tsource(function(tiddler,title) {\n\t\tvar t, length;\n\t\tif (field === 'tags') {\n\t\t\tif(tiddler &amp;&amp; tiddler.fields.tags) {\n\t\t\t\tfor(t=0, length=tiddler.fields.tags.length; t&lt;length; t++) {\n\t\t\t\t\ttags[tiddler.fields.tags[t]] = true;\n\t\t\t\t}\n\t\t\t}\n\t\t} else {\n\t\t\tif (tiddler &amp;&amp; tiddler.fields[operator.suffix]) {\n\t\t\t\totherArray = $tw.utils.parseStringArray(tiddler.fields[operator.suffix]);\n\t\t\t\tfor (t=0, length=otherArray.length; t&lt;length; t++) {\n\t\t\t\t\ttags[otherArray[t]] = true;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t});\n\n\treturn Object.keys(tags);\n};\n\n})();\n&quot;
+        }
+    }
+}</pre>
+</div>
 <div author="kixam" core-version="&gt;=5.1.8" dependents="" description="datepicker plugin for TiddlyWiki5, based on Pikaday version 1.5.1" list="readme license usage" plugin-type="plugin" source="https://github.com/kixam/TW5-datepicker" title="$:/plugins/kixam/datepicker" type="application/json" version="0.5.2">
 <pre>{
     &quot;tiddlers&quot;: {
@@ -8829,20 +8998,47 @@ Error message and password prompt
     }
 }</pre>
 </div>
+<div created="20180403205228816" fieldname="from" hide_in_edit_mode="" hide_in_view_mode="" label="from" modified="20180403205228817" title="$:/settings/AlternateTagFields/from" wikify="">
+<pre></pre>
+</div>
+<div created="20180403205232467" fieldname="to" hide_in_edit_mode="" hide_in_view_mode="" label="to" modified="20180403205232469" title="$:/settings/AlternateTagFields/to" wikify="">
+<pre></pre>
+</div>
+<div created="20180403205224884" fieldname="type" hide_in_edit_mode="" hide_in_view_mode="" label="type" modified="20180403205224886" title="$:/settings/AlternateTagFields/type" wikify="">
+<pre></pre>
+</div>
 <div created="20180403201223710" modified="20180403201233585" title="$:/SiteSubtitle">
 <pre>A mobile friendly personal finance tracker in tiddlywiki</pre>
 </div>
 <div created="20180403201205187" modified="20180403201219403" title="$:/SiteTitle">
 <pre>tw - MyFinance</pre>
 </div>
-<div created="20180403201247339" modified="20180403201247923" title="$:/state/tab--1963855381">
-<pre>$:/core/ui/ControlPanel/Theme</pre>
+<div created="20180403220749886" modified="20180403220749886" title="$:/state/Excise/-1518758563/type">
+<pre>link</pre>
 </div>
-<div created="20180403201246187" modified="20180403201246187" title="$:/state/tab-1749438307">
+<div created="20180403212517896" modified="20180403212517896" title="$:/state/showeditpreview">
+<pre>yes</pre>
+</div>
+<div created="20180403212516415" modified="20180403212956468" title="$:/state/sidebar">
+<pre>yes</pre>
+</div>
+<div created="20180403205455199" modified="20180403214907871" title="$:/state/tab--1894100145">
+<pre>accounts</pre>
+</div>
+<div created="20180403201247339" modified="20180403213003972" title="$:/state/tab--1963855381">
+<pre>$:/themes/tiddlywiki/vanilla/themetweaks</pre>
+</div>
+<div created="20180403201246187" modified="20180403213001427" title="$:/state/tab-1749438307">
 <pre>$:/core/ui/ControlPanel/Appearance</pre>
 </div>
-<div list="$:/Import" title="$:/StoryList">
+<div created="20180403211851646" modified="20180403211851646" title="$:/state/tab/sidebar--1835078512">
+<pre>$:/core/ui/SideBar/Recent</pre>
+</div>
+<div list="$:/myfinance/macros $:/myfinance/macros/history $:/myfinance/macros/entry $:/myfinance/macros/books Today History accounts Books" title="$:/StoryList">
 <pre></pre>
+</div>
+<div created="20180403215519468" modified="20180403215519468" title="$:/temp/advancedsearch">
+<pre>accounts</pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
 <pre>{
@@ -8857,7 +9053,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;file:///home/tombom/Computer/tiddlylab/tw-myfinance.html&quot;
+            &quot;text&quot;: &quot;file:///home/tombom/Computer/beleriandcrises/tw-myfinance/tw-myfinance.html&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -8877,7 +9073,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/home/tombom/Computer/tiddlylab/tw-myfinance.html&quot;
+            &quot;text&quot;: &quot;/home/tombom/Computer/beleriandcrises/tw-myfinance/tw-myfinance.html&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -8890,7 +9086,16 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20180403201250498" modified="20180403201303685" title="$:/theme">
+<div created="20180403211352991" modified="20180403211355340" title="$:/temp/NewTagName/type">
+<pre></pre>
+</div>
+<div created="20180403205306246" modified="20180403220346108" title="$:/temp/search">
+<pre>today</pre>
+</div>
+<div created="20180403205219686" fieldname="" hide_in_edit_mode="" hide_in_view_mode="" label="" modified="20180403205232469" title="$:/temp/Settings/AlternateTagFields" wikify="">
+<pre></pre>
+</div>
+<div created="20180403201250498" modified="20180403205211797" title="$:/theme">
 <pre>$:/themes/tiddlywiki/vanilla</pre>
 </div>
 <div author="JD" core-version="&gt;=5.1.14" created="20180326154440385" creator="jd" dependents="$:/themes/tiddlywiki/vanilla" description="Not-quite-there-yet quantum paper for TW5" list="contents" modified="20180329155451338" modifier="jd" name="Material" plugin-type="theme" title="$:/themes/jd/Material" type="application/json" version="0.3.30">
@@ -9332,6 +9537,137 @@ Error message and password prompt
         }
     }
 }</pre>
+</div>
+<div created="20180403213006413" modified="20180403213006413" title="$:/themes/tiddlywiki/vanilla/options/sidebarlayout">
+<pre>fluid-fixed</pre>
+</div>
+<div created="20180403205345943" modified="20180403211431581" tags="books" title="accounts">
+<pre>&lt;&lt;bookBody accounts&gt;&gt;</pre>
+</div>
+<div created="20180403211745024" modified="20180403212952816" tags="tools" title="addBook">
+<pre>&lt;$edit tiddler=&quot;$:/temp/addBook&quot; field=&quot;newtitle&quot; class=&quot;tc-edit-texteditor&quot; default=&quot;ooo&quot; placeholder=&quot;Name&quot;/&gt;
+
+Type: &lt;$select tiddler={{$:/temp/addBook!!newtitle}} field=&quot;type&quot;&gt;
+&lt;$list filter='[tag[books]]'&gt;
+&lt;option&gt;&lt;$view field='title'/&gt;&lt;/option&gt;
+&lt;/$list&gt;
+&lt;/$select&gt;
+
+Initial value: &lt;$edit field=&quot;initialValue&quot; class=&quot;tc-edit-texteditor&quot; tiddler={{$:/temp/addBook!!newtitle}} placeholder=&quot;initial value&quot; field=&quot;initialvalue&quot;/&gt;
+
+&lt;$button&gt;
+
+&lt;$action-deletetiddler $tiddler=&quot;$:/temp/addBook&quot;/&gt;
+
+&lt;$action-sendmessage $message=&quot;tm-close-tiddler&quot; $param={{!!title}}/&gt;
+
+ADD BOOK
+&lt;/$button&gt;&gt;
+
+{{$:/temp/addBook!!newtitle}}
+
+&lt;$transclude tiddler={{$:/temp/addBook!!newtitle}} field=&quot;type&quot;/&gt;
+
+&lt;$transclude tiddler={{$:/temp/addBook!!newtitle}} field=&quot;initialvalue&quot;/&gt;
+</pre>
+</div>
+<div created="20180403214956303" modified="20180403215300470" tags="tools" title="addTransaction">
+<pre>From: 
+&lt;$select tiddler=&quot;$:/temp/addTX&quot; field=&quot;from&quot; default=&quot;&quot;&gt;
+&lt;$list filter=&quot;[tag[books]!prefix[Draft]]&quot;&gt;
+&lt;optgroup label={{!!title}}&gt;
+&lt;$list filter='[&lt;currentTiddler&gt;listed[type]!prefix[Draft]]'&gt;
+&lt;option&gt;&lt;$view field='type'/&gt; &lt;$view field='title'/&gt;&lt;/option&gt;
+&lt;/$list&gt;
+&lt;/optgroup&gt;
+&lt;/$list&gt;
+&lt;/$select&gt;
+
+To:
+&lt;$select tiddler=&quot;$:/temp/addTX&quot; field=&quot;to&quot; default=&quot;&quot;&gt;
+&lt;$list filter=&quot;[tag[books]!prefix[Draft]]&quot;&gt;
+&lt;optgroup label={{!!title}}&gt;
+&lt;$list filter='[&lt;currentTiddler&gt;listed[type]!prefix[Draft]]'&gt;
+&lt;option&gt;&lt;$view field='type'/&gt; &lt;$view field='title'/&gt;&lt;/option&gt;
+&lt;/$list&gt;
+&lt;/optgroup&gt;
+&lt;/$list&gt;
+&lt;/$select&gt;
+
+Date: &lt;$edit-date tiddler='$:/temp/addTX'  field=&quot;created&quot; firstDay=1 format=&quot;YYYY-MM-DD&quot;/&gt;
+
+Value: &lt;$edit field=&quot;value&quot; class=&quot;tc-edit-texteditor&quot; tiddler='$:/temp/addTX'
+placeholder=&quot;value&quot;/&gt;
+&lt;br&gt;
+
+Notes: &lt;$edit field=&quot;notes&quot; class=&quot;tc-edit-texteditor&quot; tiddler='$:/temp/addTX' placeholder=&quot;notes&quot; default=&quot;Anon&quot;/&gt;
+&lt;br&gt;
+
+&lt;$button&gt;
+
+&lt;$action-setfield $tiddler=&quot;$:/temp/addTX&quot; $field=&quot;newtitle&quot; $value=&lt;&lt;now YYYY-0MM-0DD,0hh:0mm:0ss&gt;&gt; default=&quot;&quot;/&gt;
+
+&lt;$action-setfield $tiddler={{$:/temp/addTX!!newtitle}} $field=&quot;tags&quot; $value=&quot;tx&quot; default=&quot;&quot;/&gt;
+
+&lt;$action-setfield $tiddler={{$:/temp/addTX!!newtitle}} $field=&quot;from&quot; $value={{$:/temp/addTX!!from}}/&gt;
+
+&lt;$action-setfield $tiddler={{$:/temp/addTX!!newtitle}} $field=&quot;to&quot; $value={{$:/temp/addTX!!to}}/&gt;
+
+&lt;$action-setfield $tiddler={{$:/temp/addTX!!newtitle}} $field=&quot;created&quot; $value={{$:/temp/addTX!!created}}/&gt;
+
+&lt;$action-setfield $tiddler={{$:/temp/addTX!!newtitle}} $field=&quot;value&quot; $value={{$:/temp/addTX!!value}}/&gt;
+
+&lt;$action-setfield $tiddler={{$:/temp/addTX!!newtitle}} $field=&quot;notes&quot; $value={{$:/temp/addTX!!notes}}/&gt;
+
+&lt;$action-deletetiddler $tiddler=&quot;$:/temp/addTX&quot;/&gt;
+
+&lt;$action-sendmessage $message=&quot;tm-close-tiddler&quot; $param={{!!title}}/&gt;
+
+Add tx
+
+&lt;/$button&gt;</pre>
+</div>
+<div created="20180403213019483" daystoshow="2" initialvalue="144" modified="20180403220633761" title="bank" type="accounts">
+<pre>!Total value
+&lt;&lt;totalEntryValue&gt;&gt;
+
+! Transactions
+
+&lt;&lt;listEntryTX&gt;&gt;
+
+</pre>
+</div>
+<div created="20180403205309535" modified="20180403214900669" tags="index" title="Books">
+<pre>&lt;style&gt;
+.tc-tagged-index .tc-tab-buttons{
+font-size:1.5em;
+}
+&lt;/style&gt;
+
+Total value:
+
+![[Add a book|addBook]]
+
+
+&lt;&lt;tabs &quot;[tag[books]sort[title]!prefix[Draft]]&quot;&gt;&gt;</pre>
+</div>
+<div created="20180403205421340" modified="20180403214810672" tags="books" title="credits">
+<pre>&lt;&lt;bookBody credits&gt;&gt;</pre>
+</div>
+<div created="20180403205359243" modified="20180403205406966" tags="books" title="expenses">
+<pre></pre>
+</div>
+<div created="20180403215318153" modified="20180403215458381" tags="" title="History">
+<pre>&lt;&lt;tabs &quot;[tag[history]!prefix[Draft]]&quot;&gt;&gt; </pre>
+</div>
+<div created="20180403205410345" modified="20180403205417208" tags="books" title="incomes">
+<pre></pre>
+</div>
+<div created="20180403205444100" modified="20180403205450730" tags="books" title="misc">
+<pre></pre>
+</div>
+<div created="20180403215426755" modified="20180403220524360" tags="history" title="Today">
+<pre>&lt;&lt;history 0&gt;&gt;</pre>
 </div>
 
 </div>
